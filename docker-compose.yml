@@ -1,0 +1,35 @@
+version: "3.7"
+
+volumes:
+  db:
+
+services:
+  postgres-db:
+    image: postgres:13-alpine
+    volumes:
+      - db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: maveric_hub
+      POSTGRES_nomination: r_nomination
+      POSTGRES_PASSWORD: r_nomination@123
+
+  nomination-service:
+    container_name: nomination-service
+    build:
+      context: ../nomination-service
+      dockerfile: Dockerfile
+    image: nomination-service:latest
+    restart: always
+    ports:
+      - 4040:4040
+    depends_on:
+      - postgres-db
+    links:
+      - postgres-db:database
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/maveric_hub
+      - SPRING_DATASOURCE_nominationNAME=r_nomination
+      - SPRING_DATASOURCE_PASSWORD=r_nomination@123
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update

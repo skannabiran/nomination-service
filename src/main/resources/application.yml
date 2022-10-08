@@ -1,0 +1,8 @@
+server:
+  port: 4040
+spring:
+  application:
+    name: nomination-service
+logging:
+  level:
+    com.maveric: info
